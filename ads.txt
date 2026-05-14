@@ -1,0 +1,15 @@
+# ads.txt — VehículoInfo
+# Más info: https://support.google.com/adsense/answer/7532444
+#
+# INSTRUCCIÓN:
+# Sustituye ca-pub-3429002187782483 por tu Publisher ID real de Google AdSense
+# (lo encuentras en AdSense → Cuenta → Información de la cuenta)
+#
+# Este archivo debe estar accesible en:
+# https://tudominio.com/ads.txt
+#
+# En el servidor Node.js, colócalo en la misma carpeta raíz del proyecto
+# (junto a server.js e index.html) y Express lo servirá automáticamente
+# gracias a: app.use(express.static(path.join(__dirname)))
+
+google.com, ca-pub-3429002187782483, DIRECT, f08c47fec0942fa0
