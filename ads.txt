@@ -6,7 +6,7 @@
 # (lo encuentras en AdSense → Cuenta → Información de la cuenta)
 #
 # Este archivo debe estar accesible en:
-# https://tudominio.com/ads.txt
+# https://infomatriculas.onrender.com/
 #
 # En el servidor Node.js, colócalo en la misma carpeta raíz del proyecto
 # (junto a server.js e index.html) y Express lo servirá automáticamente
