@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VehículoInfo — Consulta por Matrícula</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+<!-- ============================================================
+  GOOGLE ADSENSE — PASO 1 DE 2: SCRIPT PRINCIPAL
+  Cuando tengas tu cuenta de AdSense aprobada, sustituye
+  TU-ID-DE-PUBLISHER (ca-pub-XXXXXXXXXXXXXXXX) por tu ID real.
+  Este script va UNA SOLA VEZ en el <head> de tu página.
+  ============================================================ -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX"
+     crossorigin="anonymous"></script>
+<style>
+  :root {
+    --bg:       #06080d;
+    --s1:       #0c1018;
+    --s2:       #111620;
+    --border:   #182030;
+    --border2:  #1e2d45;
+    --accent:   #00cfff;
+    --blue:     #004fff;
+    --green:    #00e87a;
+    --warn:     #ffb300;
+    --red:      #ff3a3a;
+    --text:     #d8e0f0;
+    --muted:    #3d506a;
+    --dim:      #1a2840;
+  }
+
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Background atmosphere */
+  .bg-glow {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background:
+      radial-gradient(ellipse 90% 50% at 50% -5%, rgba(0,79,255,0.14) 0%, transparent 65%),
+      radial-gradient(ellipse 50% 30% at 85% 70%, rgba(0,207,255,0.06) 0%, transparent 55%),
+      radial-gradient(ellipse 30% 20% at 10% 80%, rgba(0,232,122,0.04) 0%, transparent 50%);
+  }
+
+  .bg-grid {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background-image:
+      linear-gradient(rgba(0,207,255,0.018) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,207,255,0.018) 1px, transparent 1px);
+    background-size: 44px 44px;
+  }
+
+  /* ── HEADER ── */
+  header {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(6,8,13,0.88);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .hinner {
+    max-width: 1080px; margin: 0 auto; padding: 0 28px;
+    height: 58px; display: flex; align-items: center; justify-content: space-between;
+  }
+
+  .logo {
+    font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1rem;
+    color: var(--text); text-decoration: none;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .logo-icon {
+    width: 30px; height: 30px; border-radius: 8px;
+    background: linear-gradient(135deg, var(--blue), var(--accent));
+    display: flex; align-items: center; justify-content: center; font-size: 0.85rem;
+  }
+
+  .logo em { font-style: normal; color: var(--accent); }
+
+  .hbadges { display: flex; gap: 10px; align-items: center; }
+
+  .hbadge {
+    font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.1em;
+    padding: 4px 10px; border-radius: 20px; border: 1px solid var(--border);
+    color: var(--muted);
+  }
+
+  .hbadge.live {
+    color: var(--green); border-color: rgba(0,232,122,0.2);
+    background: rgba(0,232,122,0.04);
+    display: flex; align-items: center; gap: 5px;
+  }
+
+  .livepulse {
+    width: 5px; height: 5px; border-radius: 50%; background: var(--green);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.25} }
+
+  /* ── HERO ── */
+  .hero {
+    position: relative; z-index: 1;
+    max-width: 1080px; margin: 0 auto; padding: 68px 28px 52px;
+    text-align: center;
+  }
+
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 7px;
+    font-family: 'DM Mono', monospace; font-size: 0.65rem;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 18px;
+    padding: 5px 14px; border-radius: 20px;
+    border: 1px solid rgba(0,207,255,0.2); background: rgba(0,207,255,0.04);
+  }
+
+  .hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(1.9rem, 4.5vw, 3.2rem);
+    font-weight: 800; line-height: 1.07; letter-spacing: -0.025em;
+    margin-bottom: 14px;
+  }
+
+  .hero h1 em {
+    font-style: normal;
+    background: linear-gradient(110deg, var(--accent) 0%, var(--blue) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+
+  .hero p {
+    color: var(--muted); font-size: 0.9rem; line-height: 1.75;
+    max-width: 420px; margin: 0 auto 44px; font-weight: 300;
+  }
+
+  /* ── SEARCH ── */
+  .search-box { max-width: 620px; margin: 0 auto; }
+
+  /* Country tabs */
+  .country-tabs {
+    display: flex; gap: 6px; margin-bottom: 12px;
+    flex-wrap: wrap; justify-content: center;
+  }
+
+  .ctab {
+    padding: 6px 14px; border-radius: 8px;
+    border: 1px solid var(--border); background: transparent;
+    font-family: 'DM Mono', monospace; font-size: 0.65rem;
+    color: var(--muted); cursor: pointer; transition: all 0.15s;
+    display: flex; align-items: center; gap: 5px;
+  }
+
+  .ctab:hover { border-color: var(--border2); color: var(--text); }
+
+  .ctab.active {
+    border-color: rgba(0,207,255,0.4); color: var(--accent);
+    background: rgba(0,207,255,0.06);
+  }
+
+  /* Plate field */
+  .plate-field {
+    display: flex; background: var(--s1);
+    border: 1px solid var(--border2); border-radius: 12px; overflow: hidden;
+    transition: border-color 0.2s, box-shadow 0.2s; margin-bottom: 10px;
+  }
+
+  .plate-field:focus-within {
+    border-color: rgba(0,207,255,0.55);
+    box-shadow: 0 0 0 4px rgba(0,207,255,0.07);
+  }
+
+  /* EU plate flag */
+  .eu-plate-tag {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    background: #003399; padding: 0 10px; gap: 2px; min-width: 44px;
+  }
+
+  .eu-stars { font-size: 0.5rem; letter-spacing: -1px; color: #ffd700; line-height: 1; }
+  .eu-code  { font-family: 'DM Mono', monospace; font-size: 0.52rem; font-weight: 500; color: #ffd700; letter-spacing: 0.06em; }
+
+  .plate-input {
+    flex: 1; background: transparent; border: none; outline: none;
+    padding: 17px 16px; font-family: 'DM Mono', monospace;
+    font-size: 1.3rem; font-weight: 500; color: var(--text);
+    letter-spacing: 0.14em; text-transform: uppercase;
+  }
+
+  .plate-input::placeholder { color: var(--dim); letter-spacing: 0.06em; }
+
+  .search-btn {
+    padding: 0 26px; min-width: 120px;
+    background: linear-gradient(135deg, var(--blue), var(--accent));
+    border: none; cursor: pointer;
+    font-family: 'Syne', sans-serif; font-weight: 700;
+    font-size: 0.75rem; letter-spacing: 0.06em; color: #fff;
+    transition: opacity 0.18s, transform 0.1s; white-space: nowrap;
+    display: flex; align-items: center; justify-content: center; gap: 7px;
+  }
+
+  .search-btn:hover { opacity: 0.88; }
+  .search-btn:active { transform: scale(0.97); }
+  .search-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+  .search-hint {
+    font-family: 'DM Mono', monospace; font-size: 0.62rem; color: var(--muted);
+    text-align: center; padding: 4px 0;
+  }
+
+  .search-hint span { color: var(--accent); cursor: pointer; }
+  .search-hint span:hover { text-decoration: underline; }
+
+  /* ── LOADING ── */
+  .loading-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(6,8,13,0.88); backdrop-filter: blur(14px);
+    z-index: 300; flex-direction: column;
+    align-items: center; justify-content: center; gap: 22px;
+  }
+
+  .loading-overlay.on { display: flex; }
+
+  .spin-rings { width: 60px; height: 60px; position: relative; }
+
+  .spin-rings::before, .spin-rings::after {
+    content: ''; position: absolute; inset: 0; border-radius: 50%;
+    border: 2px solid transparent;
+  }
+
+  .spin-rings::before { border-top-color: var(--accent); animation: spin 0.85s linear infinite; }
+  .spin-rings::after  { border-bottom-color: var(--blue); inset: 8px; animation: spin 1.3s linear infinite reverse; }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .loading-label {
+    font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.9rem; letter-spacing: 0.04em;
+  }
+
+  .loading-steps {
+    display: flex; flex-direction: column; gap: 7px;
+    font-family: 'DM Mono', monospace; font-size: 0.66rem;
+  }
+
+  .lstep { display: flex; align-items: center; gap: 9px; color: var(--muted); opacity: 0; transition: opacity 0.3s, color 0.3s; }
+  .lstep.on   { opacity: 1; color: var(--accent); }
+  .lstep.done { opacity: 1; color: var(--green); }
+  .lstep::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+
+  /* ── RESULTS ── */
+  .results {
+    display: none; position: relative; z-index: 1;
+    max-width: 1080px; margin: 0 auto; padding: 0 28px 80px;
+  }
+
+  .results.on { display: block; }
+
+  /* Plate identity */
+  .plate-identity {
+    display: flex; align-items: center; gap: 22px;
+    background: var(--s1); border: 1px solid var(--border2); border-radius: 14px;
+    padding: 22px 26px; margin-bottom: 18px;
+    position: relative; overflow: hidden;
+    animation: up 0.4s ease;
+  }
+
+  .plate-identity::after {
+    content: ''; position: absolute; top: 0; left: 0;
+    width: 3px; height: 100%;
+    background: linear-gradient(180deg, var(--blue), var(--accent));
+  }
+
+  /* Visual plate */
+  .visual-plate {
+    background: #f5d400; border: 3px solid #111;
+    border-radius: 6px; padding: 8px 14px 8px 30px;
+    font-family: 'DM Mono', monospace; font-size: 1.5rem; font-weight: 500;
+    color: #111; letter-spacing: 0.12em; position: relative;
+    flex-shrink: 0; min-width: 160px; text-align: center;
+  }
+
+  .visual-plate::before {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 24px;
+    background: var(--blue); border-radius: 3px 0 0 3px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+  }
+
+  .visual-plate .eu-inner {
+    position: absolute; left: 0; top: 0; bottom: 0; width: 24px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 1px; z-index: 1;
+  }
+
+  .visual-plate .eu-inner .s { font-size: 0.42rem; color: #ffd700; letter-spacing: -1px; line-height: 1; }
+  .visual-plate .eu-inner .c { font-size: 0.44rem; color: #ffd700; font-family: 'DM Mono', monospace; }
+
+  .id-info { flex: 1; }
+
+  .id-name {
+    font-family: 'Syne', sans-serif; font-size: 1.35rem; font-weight: 800;
+    letter-spacing: -0.02em; margin-bottom: 6px;
+  }
+
+  .id-meta {
+    display: flex; gap: 12px; flex-wrap: wrap;
+    font-family: 'DM Mono', monospace; font-size: 0.66rem; color: var(--muted);
+  }
+
+  .id-meta b { color: var(--text); font-weight: 500; }
+
+  .id-pills { display: flex; flex-direction: column; gap: 7px; flex-shrink: 0; }
+
+  .pill {
+    padding: 5px 12px; border-radius: 20px;
+    font-family: 'DM Mono', monospace; font-size: 0.62rem; font-weight: 500;
+    display: flex; align-items: center; gap: 5px; white-space: nowrap;
+    border: 1px solid;
+  }
+
+  .pill.green { color: var(--green); border-color: rgba(0,232,122,0.2); background: rgba(0,232,122,0.06); }
+  .pill.warn  { color: var(--warn);  border-color: rgba(255,179,0,0.2);  background: rgba(255,179,0,0.06); }
+  .pill.red   { color: var(--red);   border-color: rgba(255,58,58,0.2);  background: rgba(255,58,58,0.06); }
+  .pill.blue  { color: var(--accent);border-color: rgba(0,207,255,0.2);  background: rgba(0,207,255,0.06); }
+
+  /* Section divider */
+  .sdiv {
+    display: flex; align-items: center; gap: 10px;
+    margin: 22px 0 12px;
+  }
+
+  .sdiv span {
+    font-family: 'Syne', sans-serif; font-size: 0.66rem; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); white-space: nowrap;
+  }
+
+  .sdiv-line { flex: 1; height: 1px; background: var(--border); }
+
+  /* Grid */
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+
+  .card {
+    background: var(--s1); border: 1px solid var(--border); border-radius: 11px;
+    overflow: hidden; animation: up 0.4s ease; transition: border-color 0.2s;
+  }
+
+  .card:hover { border-color: var(--border2); }
+  .card.full  { grid-column: 1 / -1; }
+
+  .card-head {
+    padding: 13px 17px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+
+  .card-title {
+    font-family: 'Syne', sans-serif; font-size: 0.72rem; font-weight: 700;
+    letter-spacing: 0.04em; display: flex; align-items: center; gap: 7px;
+  }
+
+  .cicon {
+    width: 22px; height: 22px; border-radius: 5px;
+    display: flex; align-items: center; justify-content: center; font-size: 0.65rem;
+  }
+
+  .ci-blue  { background: rgba(0,79,255,0.15); }
+  .ci-cyan  { background: rgba(0,207,255,0.1); }
+  .ci-green { background: rgba(0,232,122,0.1); }
+  .ci-warn  { background: rgba(255,179,0,0.1); }
+  .ci-red   { background: rgba(255,58,58,0.1); }
+
+  .cbadge {
+    font-family: 'DM Mono', monospace; font-size: 0.58rem; color: var(--muted);
+    background: var(--s2); padding: 2px 7px; border-radius: 8px;
+  }
+
+  /* Data rows */
+  .drows { padding: 3px 0; }
+
+  .drow {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    padding: 8px 17px; gap: 10px;
+    border-bottom: 1px solid rgba(24,32,48,0.7); transition: background 0.12s;
+  }
+
+  .drow:last-child { border-bottom: none; }
+  .drow:hover { background: rgba(255,255,255,0.013); }
+
+  .dl { font-size: 0.7rem; color: var(--muted); font-weight: 300; min-width: 95px; flex-shrink: 0; line-height: 1.45; }
+  .dv { font-family: 'DM Mono', monospace; font-size: 0.71rem; color: var(--text); text-align: right; word-break: break-word; line-height: 1.45; }
+  .dv.cyan  { color: var(--accent); }
+  .dv.green { color: var(--green); }
+  .dv.warn  { color: var(--warn); }
+  .dv.red   { color: var(--red); }
+
+  /* Vehicle image */
+  .veh-image-wrap {
+    padding: 16px; display: flex; align-items: center; justify-content: center;
+    background: var(--s2); min-height: 140px;
+  }
+
+  .veh-image-wrap img {
+    max-width: 100%; max-height: 160px; border-radius: 6px;
+    object-fit: contain;
+  }
+
+  .veh-image-placeholder {
+    font-size: 4rem; opacity: 0.3;
+  }
+
+  /* Empty / error */
+  .empty-note { padding: 18px; text-align: center; font-size: 0.72rem; color: var(--muted); }
+
+  /* Credits indicator */
+  .credits-bar {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    font-family: 'DM Mono', monospace; font-size: 0.62rem; color: var(--muted);
+    margin-top: 10px;
+  }
+
+  .credits-bar span { color: var(--accent); }
+
+  /* Error */
+  .error-panel {
+    display: none; text-align: center; padding: 60px 20px;
+    position: relative; z-index: 1; max-width: 1080px; margin: 0 auto;
+  }
+
+  .error-panel.on { display: block; }
+  .error-code { font-family: 'Syne', sans-serif; font-size: 4.5rem; font-weight: 800; color: var(--border2); line-height: 1; margin-bottom: 10px; }
+  .error-text { color: var(--muted); font-size: 0.88rem; line-height: 1.65; margin-bottom: 26px; }
+
+  .retry-btn {
+    display: inline-flex; align-items: center; gap: 7px; padding: 11px 22px;
+    border: 1px solid var(--border2); border-radius: 8px; background: var(--s1);
+    color: var(--text); font-family: 'Syne', sans-serif; font-size: 0.77rem;
+    font-weight: 700; cursor: pointer; transition: border-color 0.15s;
+  }
+
+  .retry-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  footer {
+    border-top: 1px solid var(--border); padding: 20px 28px; text-align: center;
+    font-family: 'DM Mono', monospace; font-size: 0.6rem; color: var(--muted);
+    position: relative; z-index: 1; line-height: 1.9;
+  }
+
+  footer a { color: var(--muted); text-decoration: none; }
+  footer a:hover { color: var(--accent); }
+
+  @keyframes up { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+
+  /* ── AD SLOTS ── */
+  .ad-slot {
+    position: relative; z-index: 1;
+    width: 100%; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--s1); border: 1px solid var(--border);
+    border-radius: 10px;
+  }
+
+  .ad-slot-banner {
+    /* Leaderboard 728x90 / responsive */
+    min-height: 90px;
+    margin: 0 0 14px 0;
+  }
+
+  .ad-slot-rectangle {
+    /* Medium Rectangle 300x250 */
+    min-height: 250px;
+  }
+
+  .ad-slot-inline {
+    /* In-content horizontal banner */
+    min-height: 90px;
+    margin: 22px 0 8px 0;
+  }
+
+  /* Placeholder shown while AdSense is not yet active */
+  .ad-placeholder {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 6px; width: 100%; min-height: inherit; padding: 20px;
+    font-family: 'DM Mono', monospace; font-size: 0.6rem;
+    color: var(--muted); text-align: center; line-height: 1.6;
+  }
+
+  .ad-placeholder strong { color: var(--border2); font-size: 0.58rem; letter-spacing: 0.1em; text-transform: uppercase; }
+
+  /* Hide placeholder once AdSense loads */
+  .adsbygoogle ~ .ad-placeholder { display: none; }
+
+  @media (max-width: 640px) {
+    .hinner, .hero, .results { padding-left: 16px; padding-right: 16px; }
+    .grid2 { grid-template-columns: 1fr; }
+    .card.full { grid-column: 1; }
+    .plate-identity { flex-direction: column; align-items: flex-start; }
+    .country-tabs { gap: 4px; }
+    footer { padding: 20px 16px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-glow"></div>
+<div class="bg-grid"></div>
+
+<!-- Loading -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spin-rings"></div>
+  <div class="loading-label">Consultando datos del vehículo</div>
+  <div class="loading-steps">
+    <div class="lstep" id="ls1">Conectando con Regcheck API...</div>
+    <div class="lstep" id="ls2">Validando matrícula europea...</div>
+    <div class="lstep" id="ls3">Obteniendo ficha técnica...</div>
+    <div class="lstep" id="ls4">Procesando datos del vehículo...</div>
+  </div>
+</div>
+
+<!-- Header -->
+<header>
+  <div class="hinner">
+    <a class="logo" href="#" onclick="resetSearch();return false;">
+      <div class="logo-icon">🚗</div>
+      Vehículo<em>Info</em>
+    </a>
+    <div class="hbadges">
+      <div class="hbadge live"><div class="livepulse"></div>API LIVE</div>
+      <div class="hbadge">Regcheck · EU</div>
+    </div>
+  </div>
+</header>
+
+<!-- ============================================================
+  ANUNCIO #1 — BANNER SUPERIOR (Leaderboard 728×90 / Responsive)
+  Posición: justo debajo del header, antes del hero.
+  Alto impacto: lo ven todos los visitantes nada más entrar.
+
+  CUANDO TENGAS ADSENSE APROBADO:
+  1. Crea un anuncio "Display" responsive en tu panel de AdSense
+  2. Sustituye data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" por tu Publisher ID
+  3. Sustituye data-ad-slot="XXXXXXXXXX" por el Slot ID del anuncio creado
+  4. Borra el bloque <div class="ad-placeholder">...</div> de abajo
+  ============================================================ -->
+<div style="position:relative;z-index:1;max-width:1080px;margin:12px auto 0;padding:0 28px;">
+  <div class="ad-slot ad-slot-banner">
+    <ins class="adsbygoogle"
+         style="display:block;width:100%"
+         data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+         data-ad-slot="XXXXXXXXXX"
+         data-ad-format="horizontal"
+         data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+    <div class="ad-placeholder">
+      <strong>📢 Espacio publicitario — Anuncio #1</strong>
+      Banner Superior · 728×90 (Leaderboard)<br>
+      Reemplaza el Publisher ID y Slot ID de AdSense cuando lo tengas aprobado
+    </div>
+  </div>
+</div>
+
+<!-- Hero / Search -->
+<section class="hero" id="heroSection">
+  <div class="eyebrow">🌍 Cobertura europea · Datos reales</div>
+  <h1>Consulta cualquier<br>matrícula <em>europea</em></h1>
+  <p>Introduce la matrícula y obtén ficha técnica completa, datos del fabricante, imagen del vehículo y mucho más en tiempo real.</p>
+
+  <div class="search-box">
+    <!-- Country selector -->
+    <div class="country-tabs" id="countryTabs">
+      <button class="ctab active" data-code="Spain"        data-eu="E"  onclick="selectCountry(this)">🇪🇸 España</button>
+      <button class="ctab"        data-code="Germany"      data-eu="D"  onclick="selectCountry(this)">🇩🇪 Alemania</button>
+      <button class="ctab"        data-code="France"       data-eu="F"  onclick="selectCountry(this)">🇫🇷 Francia</button>
+      <button class="ctab"        data-code="Italy"        data-eu="I"  onclick="selectCountry(this)">🇮🇹 Italia</button>
+      <button class="ctab"        data-code="Portugal"     data-eu="P"  onclick="selectCountry(this)">🇵🇹 Portugal</button>
+      <button class="ctab"        data-code="UnitedKingdom" data-eu="GB" onclick="selectCountry(this)">🇬🇧 UK</button>
+      <button class="ctab"        data-code="Netherlands"  data-eu="NL" onclick="selectCountry(this)">🇳🇱 Países Bajos</button>
+      <button class="ctab"        data-code="Sweden"       data-eu="S"  onclick="selectCountry(this)">🇸🇪 Suecia</button>
+    </div>
+
+    <!-- Plate input -->
+    <div class="plate-field">
+      <div class="eu-plate-tag">
+        <div class="eu-stars" id="euStars">★★★</div>
+        <div class="eu-code"  id="euCode">E</div>
+      </div>
+      <input
+        class="plate-input" id="plateInput"
+        type="text" placeholder="1234 BCD"
+        maxlength="12" autocomplete="off" spellcheck="false"
+      />
+      <button class="search-btn" id="searchBtn" onclick="doSearch()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        CONSULTAR
+      </button>
+    </div>
+    <div class="search-hint" id="searchHint">
+      Ejemplo: <span onclick="fillPlate('1234BCD')">1234BCD</span> · <span onclick="fillPlate('B1234CD')">B1234CD</span> · <span onclick="fillPlate('M1234BC')">M1234BC</span>
+    </div>
+    <div class="credits-bar" id="creditsBar" style="display:none;">
+      Créditos restantes: <span id="creditCount">—</span>
+    </div>
+  </div>
+</section>
+
+<!-- Results -->
+<div class="results" id="resultsDiv">
+
+  <!-- Identity bar -->
+  <div class="plate-identity" id="plateIdentity">
+    <div class="visual-plate" id="visualPlate">
+      <div class="eu-inner">
+        <div class="s" id="vpStars">★★★</div>
+        <div class="c" id="vpCode">E</div>
+      </div>
+      <span id="plateText">—</span>
+    </div>
+    <div class="id-info">
+      <div class="id-name" id="idName">—</div>
+      <div class="id-meta" id="idMeta"></div>
+    </div>
+    <div class="id-pills" id="idPills"></div>
+  </div>
+
+  <div class="sdiv"><div class="sdiv-line"></div><span>Ficha Técnica</span><div class="sdiv-line"></div></div>
+
+  <!-- ============================================================
+    ANUNCIO #2 — IN-CONTENT (entre resultados)
+    Posición: entre la barra de identidad del vehículo y la ficha técnica.
+    El usuario ya ha visto el resultado y sigue leyendo → alta atención.
+
+    CUANDO TENGAS ADSENSE APROBADO:
+    Sustituye ca-pub-XXXXXXXXXXXXXXXX y el Slot ID correspondiente.
+    Puedes crear un anuncio distinto al #1 para medir cuál convierte mejor.
+    ============================================================ -->
+  <div class="ad-slot ad-slot-inline">
+    <ins class="adsbygoogle"
+         style="display:block;width:100%"
+         data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+         data-ad-slot="YYYYYYYYYY"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+    <div class="ad-placeholder">
+      <strong>📢 Espacio publicitario — Anuncio #2</strong>
+      In-Content · Responsive<br>Reemplaza Publisher ID y Slot ID
+    </div>
+  </div>
+
+  <div class="grid2">
+    <!-- Image card -->
+    <div class="card" id="imageCard">
+      <div class="card-head">
+        <div class="card-title"><div class="cicon ci-blue">📷</div> Imagen del Vehículo</div>
+        <div class="cbadge">REGCHECK</div>
+      </div>
+      <div class="veh-image-wrap" id="imageWrap">
+        <div class="veh-image-placeholder">🚗</div>
+      </div>
+    </div>
+
+    <!-- General -->
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title"><div class="cicon ci-cyan">📋</div> Datos Generales</div>
+      </div>
+      <div class="drows" id="generalRows"></div>
+    </div>
+  </div>
+
+  <div class="grid2">
+    <!-- Engine -->
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title"><div class="cicon ci-blue">⚙️</div> Motor</div>
+      </div>
+      <div class="drows" id="engineRows"></div>
+    </div>
+
+    <!-- Body -->
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title"><div class="cicon ci-cyan">🚘</div> Carrocería</div>
+      </div>
+      <div class="drows" id="bodyRows"></div>
+    </div>
+  </div>
+
+  <div class="sdiv"><div class="sdiv-line"></div><span>Todos los datos disponibles</span><div class="sdiv-line"></div></div>
+
+  <!-- ============================================================
+    ANUNCIO #3 — BANNER INFERIOR (antes de la tabla de datos completos)
+    Posición: justo antes del bloque "Todos los campos".
+    El usuario que llega aquí está muy comprometido → buen CTR.
+
+    CUANDO TENGAS ADSENSE APROBADO:
+    Usa un tercer Slot ID diferente a los anteriores.
+    ============================================================ -->
+  <div class="ad-slot ad-slot-inline" style="margin-bottom:12px;">
+    <ins class="adsbygoogle"
+         style="display:block;width:100%"
+         data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+         data-ad-slot="ZZZZZZZZZZ"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+    <div class="ad-placeholder">
+      <strong>📢 Espacio publicitario — Anuncio #3</strong>
+      Banner inferior · Responsive<br>Reemplaza Publisher ID y Slot ID
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div class="card full">
+      <div class="card-head">
+        <div class="card-title"><div class="cicon ci-green">🗂️</div> Datos completos del vehículo</div>
+        <div class="cbadge" id="rawCountBadge">— campos</div>
+      </div>
+      <div class="drows" id="allRows"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Error -->
+<div class="error-panel" id="errorPanel">
+  <div class="error-code">!</div>
+  <div class="error-text" id="errorText">No se encontraron datos para esta matrícula.</div>
+  <button class="retry-btn" onclick="resetSearch()">← Nueva consulta</button>
+</div>
+
+<footer>
+  <!-- ============================================================
+    ANUNCIO #4 — PIE DE PÁGINA (Footer Banner)
+    Posición: encima del texto del footer. Siempre visible al final.
+    Formato recomendado: 728×90 o responsive horizontal.
+
+    CUANDO TENGAS ADSENSE APROBADO:
+    Sustituye Publisher ID y Slot ID como en los anteriores.
+    ============================================================ -->
+  <div class="ad-slot ad-slot-banner" style="margin-bottom:18px;border-radius:8px;">
+    <ins class="adsbygoogle"
+         style="display:block;width:100%"
+         data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+         data-ad-slot="WWWWWWWWWW"
+         data-ad-format="horizontal"
+         data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+    <div class="ad-placeholder">
+      <strong>📢 Espacio publicitario — Anuncio #4</strong>
+      Footer Banner · 728×90<br>Reemplaza Publisher ID y Slot ID
+    </div>
+  </div>
+
+  VehículoInfo · Datos vía <a href="https://www.regcheck.org.uk" target="_blank">Regcheck API</a> (Infinite Loop Development Ltd) ·
+  Usuario: <strong style="color:var(--accent)">InfoMatriculas</strong><br>
+  Cobertura: España · Alemania · Francia · Italia · Portugal · UK · Países Bajos · Suecia · Noruega · Finlandia · Australia y más
+</footer>
+
+<script>
+// ── CONFIG ─────────────────────────────────────────────────────────
+// El frontend llama al backend Node.js local (server.js).
+// Cuando publiques en un servidor, ambos archivos van en el mismo dominio
+// y API_BASE queda vacío → las llamadas van a /api/vehicle automáticamente.
+const API_BASE = '';
+
+let currentCountry = 'Spain';
+let currentEuCode  = 'E';
+
+// ── UI HELPERS ─────────────────────────────────────────────────────
+function selectCountry(el) {
+  document.querySelectorAll('.ctab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  currentCountry = el.dataset.code;
+  currentEuCode  = el.dataset.eu;
+  document.getElementById('euCode').textContent  = currentEuCode;
+  document.getElementById('vpCode').textContent  = currentEuCode;
+
+  // Localise placeholder
+  const placeholders = {
+    Spain: '1234 BCD', Germany: 'B AB 1234', France: 'AB-123-CD',
+    Italy: 'AB 123 CD', Portugal: '12-AB-34', UnitedKingdom: 'YY07 XHH',
+    Netherlands: 'AB-12-CD', Sweden: 'ABC 123',
+  };
+  document.getElementById('plateInput').placeholder = placeholders[currentCountry] || '1234 ABC';
+
+  // Hint examples
+  const hints = {
+    Spain: ['1234BCD','M1234BC','B4567CD'],
+    Germany: ['BAB1234','MXY1234'],
+    France: ['AB123CD'],
+    Italy: ['AB123CD'],
+    Portugal: ['12AB34'],
+    UnitedKingdom: ['YY07XHH','SK08KPT'],
+    Netherlands: ['AB12CD'],
+    Sweden: ['ABC123'],
+  };
+  const ex = hints[currentCountry] || [];
+  document.getElementById('searchHint').innerHTML = ex.length
+    ? 'Ejemplo: ' + ex.map(p => `<span onclick="fillPlate('${p}')">${p}</span>`).join(' · ')
+    : '';
+}
+
+function fillPlate(p) {
+  document.getElementById('plateInput').value = p;
+  document.getElementById('plateInput').focus();
+}
+
+function resetSearch() {
+  document.getElementById('resultsDiv').classList.remove('on');
+  document.getElementById('errorPanel').classList.remove('on');
+  document.getElementById('plateInput').value = '';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ── LOADING ────────────────────────────────────────────────────────
+function startLoad() {
+  document.getElementById('loadingOverlay').classList.add('on');
+  ['ls1','ls2','ls3','ls4'].forEach(id => { const el=document.getElementById(id); el.className='lstep'; });
+  let i = 0;
+  return setInterval(() => {
+    if (i < 4) {
+      if (i > 0) { const p = document.getElementById('ls'+i); p.classList.remove('on'); p.classList.add('done'); }
+      document.getElementById('ls'+(i+1)).classList.add('on');
+      i++;
+    }
+  }, 400);
+}
+
+function stopLoad(iv) {
+  clearInterval(iv);
+  for(let n=1;n<=4;n++){const el=document.getElementById('ls'+n); el.classList.remove('on'); el.classList.add('done');}
+  setTimeout(() => document.getElementById('loadingOverlay').classList.remove('on'), 300);
+}
+
+// ── MAIN SEARCH ────────────────────────────────────────────────────
+async function doSearch() {
+  const plate = document.getElementById('plateInput').value.trim().replace(/\s/g,'').toUpperCase();
+  if (!plate) { document.getElementById('plateInput').focus(); return; }
+
+  document.getElementById('resultsDiv').classList.remove('on');
+  document.getElementById('errorPanel').classList.remove('on');
+  const iv = startLoad();
+
+  try {
+    const res = await fetch(
+      `${API_BASE}/api/vehicle?plate=${encodeURIComponent(plate)}&country=${encodeURIComponent(currentCountry)}`,
+      { signal: AbortSignal.timeout(15000) }
+    );
+
+    const json = await res.json();
+
+    if (!res.ok || !json.ok) {
+      throw new Error(json.error
+        ? `${json.error}${json.detail ? '<br><small style="opacity:.6">' + json.detail + '</small>' : ''}`
+        : 'Error desconocido al consultar la matrícula.');
+    }
+
+    fetchCredits();
+    stopLoad(iv);
+    renderResults(plate, json.data);
+
+  } catch(err) {
+    stopLoad(iv);
+    const msg = err.name === 'TimeoutError'
+      ? 'La consulta tardó demasiado. Comprueba tu conexión e inténtalo de nuevo.'
+      : (err.message || 'Error desconocido.');
+    document.getElementById('errorText').innerHTML = msg;
+    document.getElementById('errorPanel').classList.add('on');
+    document.getElementById('errorPanel').scrollIntoView({ behavior:'smooth', block:'center' });
+  }
+}
+
+async function fetchCredits() {
+  try {
+    const res  = await fetch(`${API_BASE}/api/credits`);
+    const json = await res.json();
+    if (json.credits !== null) {
+      document.getElementById('creditCount').textContent = json.credits;
+      document.getElementById('creditsBar').style.display = 'flex';
+    }
+  } catch(e) {}
+}
+
+// ── RENDER ─────────────────────────────────────────────────────────
+function cv(val) {
+  if (val === null || val === undefined) return null;
+  if (typeof val === 'object') {
+    if (val.CurrentTextValue !== undefined) return cv(val.CurrentTextValue);
+    return null;
+  }
+  const s = String(val).trim();
+  if (!s || s === 'null' || s === 'undefined' || s === 'N/A' || s === '-') return null;
+  return s;
+}
+
+function row(label, val, cls='') {
+  const v = cv(val);
+  if (!v) return '';
+  return `<div class="drow"><span class="dl">${label}</span><span class="dv ${cls}">${v}</span></div>`;
+}
+
+function renderResults(plate, d) {
+  // Visual plate
+  document.getElementById('plateText').textContent = plate;
+  document.getElementById('vpCode').textContent = currentEuCode;
+  document.getElementById('vpStars').textContent = '★★★';
+
+  // Name
+  const make  = cv(d.CarMake)  || cv(d.MakeDescription)  || '';
+  const model = cv(d.CarModel) || cv(d.ModelDescription) || '';
+  const desc  = cv(d.Description) || [make, model].filter(Boolean).join(' ') || 'Vehículo';
+  document.getElementById('idName').textContent = desc;
+
+  // Meta
+  const metaParts = [];
+  if (cv(d.RegistrationYear)) metaParts.push(`<span>Año <b>${d.RegistrationYear}</b></span>`);
+  if (cv(d.RegistrationDate)) metaParts.push(`<span>1ª matric. <b>${d.RegistrationDate}</b></span>`);
+  if (cv(d.Colour))           metaParts.push(`<span>Color <b>${cv(d.Colour)}</b></span>`);
+  if (cv(d.FuelType))         metaParts.push(`<span><b>${cv(d.FuelType)}</b></span>`);
+  document.getElementById('idMeta').innerHTML = metaParts.join('');
+
+  // Pills
+  const pills = [];
+  if (cv(d.FuelType)) {
+    const f = cv(d.FuelType).toLowerCase();
+    const cl = f.includes('electric') ? 'green' : f.includes('hybrid') ? 'warn' : 'blue';
+    pills.push(`<div class="pill ${cl}">⛽ ${cv(d.FuelType)}</div>`);
+  }
+  if (cv(d.EngineSize) || cv(d.EngineCapacity)) {
+    const cc = cv(d.EngineSize) || cv(d.EngineCapacity);
+    pills.push(`<div class="pill blue">⚙️ ${cc} cc</div>`);
+  }
+  if (cv(d.Transmission)) {
+    pills.push(`<div class="pill blue">🔄 ${cv(d.Transmission)}</div>`);
+  }
+  document.getElementById('idPills').innerHTML = pills.join('');
+
+  // Image
+  if (cv(d.ImageUrl)) {
+    document.getElementById('imageWrap').innerHTML = `<img src="${cv(d.ImageUrl)}" alt="${desc}" onerror="this.parentNode.innerHTML='<div class=\\'veh-image-placeholder\\'>🚗</div>'" />`;
+  } else {
+    const icon = getIcon(cv(d.FuelType)||'');
+    document.getElementById('imageWrap').innerHTML = `<div class="veh-image-placeholder">${icon}</div>`;
+  }
+
+  // General rows
+  document.getElementById('generalRows').innerHTML = [
+    row('Descripción',         d.Description,          'cyan'),
+    row('Marca',               d.CarMake               || d.MakeDescription),
+    row('Modelo',              d.CarModel              || d.ModelDescription),
+    row('Año matric.',         d.RegistrationYear),
+    row('Fecha matric.',       d.RegistrationDate),
+    row('Color',               d.Colour),
+    row('Variante',            d.Variant               || d.Variation),
+    row('Nº puertas',          d.NumberOfDoors         || d.Doors),
+    row('Nº plazas',           d.NumberOfSeats         || d.Seats),
+    row('Lado conductor',      d.DriverSide),
+    row('VIN / Bastidor',      d.VehicleIdentificationNumber || d.VIN, 'cyan'),
+    row('Código ABI',          d.ABICode),
+    row('Inmovilizador',       d.Immobiliser),
+  ].join('') || '<div class="empty-note">Sin datos generales</div>';
+
+  // Engine rows
+  document.getElementById('engineRows').innerHTML = [
+    row('Combustible',         d.FuelType),
+    row('Cilindrada',          cv(d.EngineSize) ? cv(d.EngineSize)+' cc' : (cv(d.EngineCapacity) ? cv(d.EngineCapacity)+' cc' : null)),
+    row('Código motor',        d.EngineCode),
+    row('Nº motor',            d.EngineNumber),
+    row('Potencia (CV)',       cv(d.Power)             || cv(d.EnginePower)),
+    row('Potencia (kW)',       cv(d.PowerKW)),
+    row('Par máximo',          cv(d.Torque)),
+    row('CO₂ (g/km)',          cv(d.CO2Emissions)      || cv(d.Emissions)),
+    row('Consumo (l/100)',     cv(d.FuelConsumption)),
+    row('Norma emisiones',     cv(d.EuroStatus)),
+    row('Transmisión',         d.Transmission),
+  ].join('') || '<div class="empty-note">Sin datos de motor</div>';
+
+  // Body rows
+  document.getElementById('bodyRows').innerHTML = [
+    row('Carrocería',          d.BodyStyle             || d.BodyClass || d.Body),
+    row('Segmento',            d.SegmentDescription    || d.Segment),
+    row('Tipo vehículo',       d.VehicleType),
+    row('Peso (kg)',           cv(d.Weight)            || cv(d.Mass)),
+    row('Tara',                cv(d.UnladenWeight)),
+    row('MMA (kg)',            cv(d.GrossVehicleWeight)||cv(d.GVWR)),
+    row('Longitud (mm)',       cv(d.Length)),
+    row('Anchura (mm)',        cv(d.Width)),
+    row('Altura (mm)',         cv(d.Height)),
+    row('Batalla (mm)',        cv(d.Wheelbase)),
+    row('Neumáticos delant.',  cv(d.TyreSize)          || cv(d.FrontTyreSize)),
+    row('Neumáticos traser.',  cv(d.RearTyreSize)),
+    row('Grupo seguro',        cv(d.VehicleInsuranceGroup) ? cv(d.VehicleInsuranceGroup)+'/'+(cv(d.VehicleInsuranceGroupOutOf)||'50') : null),
+  ].join('') || '<div class="empty-note">Sin datos de carrocería</div>';
+
+  // All fields (raw dump of all non-null values)
+  const skipKeys = new Set(['ImageUrl']);
+  const allEntries = flattenObject(d)
+    .filter(([k, v]) => !skipKeys.has(k) && cv(v))
+    .sort(([a],[b]) => a.localeCompare(b));
+
+  document.getElementById('rawCountBadge').textContent = allEntries.length + ' campos';
+  document.getElementById('allRows').innerHTML = allEntries
+    .map(([k, v]) => row(k, v))
+    .join('') || '<div class="empty-note">Sin campos adicionales</div>';
+
+  // Show results
+  document.getElementById('resultsDiv').classList.add('on');
+  setTimeout(() => document.getElementById('resultsDiv').scrollIntoView({ behavior:'smooth', block:'start' }), 80);
+}
+
+// Flatten nested object (handle {CurrentTextValue: ...} pattern)
+function flattenObject(obj, prefix = '') {
+  const result = [];
+  for (const [k, v] of Object.entries(obj || {})) {
+    const key = prefix ? `${prefix}.${k}` : k;
+    if (v && typeof v === 'object' && !Array.isArray(v)) {
+      if ('CurrentTextValue' in v) {
+        if (cv(v.CurrentTextValue)) result.push([key, v.CurrentTextValue]);
+      } else {
+        result.push(...flattenObject(v, key));
+      }
+    } else if (v !== null && v !== undefined && !Array.isArray(v)) {
+      result.push([key, v]);
+    }
+  }
+  return result;
+}
+
+function getIcon(fuel) {
+  const f = fuel.toLowerCase();
+  if (f.includes('electric')) return '⚡';
+  if (f.includes('hybrid'))   return '🔋';
+  if (f.includes('diesel'))   return '🛢️';
+  return '🚗';
+}
+
+// Enter key
+document.getElementById('plateInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doSearch();
+});
+
+// Auto uppercase
+document.getElementById('plateInput').addEventListener('input', e => {
+  const pos = e.target.selectionStart;
+  e.target.value = e.target.value.toUpperCase();
+  e.target.setSelectionRange(pos, pos);
+});
+</script>
+</body>
+</html>
